@@ -13,11 +13,13 @@ namespace PuzzleFifteen
 {
     public partial class PuzzleArea : Form
     {
+        Random rand = new Random();
         public PuzzleArea()
         {
             InitializeComponent();
             InitializePuzzleArea();
             InitializeBlocks();
+            ShuffleBlocks();
         }
 
         private void InitializePuzzleArea()
@@ -39,17 +41,69 @@ namespace PuzzleFifteen
                     {
                         Top = row * 84,
                         Left = col * 84,
-                        Text = blockCount.ToString()
+                        Text = blockCount.ToString(),
+                        Name = "Block" + blockCount.ToString()
                     };
-                    blockCount++;
+
+                    //block.Click += new EventHandler(Block_Click);  <----- long version
+                    block.Click += Block_Click;                    //<----- short version
+
                     if (blockCount == 16)
                     {
+                        block.Name = "EmptyBlock";
                         block.Text = string.Empty;
                         block.BackColor = Color.DarkSlateBlue;
-                        block.FlatAppearance.BorderSize = 1;
+                        block.FlatAppearance.BorderSize = 0;
                     }
+                    blockCount++;
                     this.Controls.Add(block);
                 }
+            }
+        }
+        private void Block_Click(object sender, EventArgs e)
+        {
+            Button block = (Button)sender;
+            if (IsAdjacent(block))
+            {
+                SwapBlocks(block);
+            }
+        }
+
+        private void SwapBlocks(Button block)
+        {
+            Button emptyBlock = (Button)this.Controls["EmptyBlock"];
+            Point oldLocation = block.Location;
+            block.Location = emptyBlock.Location;
+            emptyBlock.Location = oldLocation;
+        }
+
+        private bool IsAdjacent(Button block)
+        {
+            double a;
+            double b;
+            double c;
+            Button emptyBlock = (Button)this.Controls["EmptyBlock"];
+
+            a = Math.Abs(emptyBlock.Top - block.Top);
+            b = Math.Abs(emptyBlock.Left - block.Left);
+            c = Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2));
+            if (c < 85)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        private void ShuffleBlocks()
+        {
+            string blockName;
+            for (int i = 0; i < 100; i++)
+            {
+                blockName = "Block" + rand.Next(1, 16);
+                Button block = (Button)this.Controls[blockName];
+                SwapBlocks(block);
             }
         }
 
