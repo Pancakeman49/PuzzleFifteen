@@ -14,6 +14,7 @@ namespace PuzzleFifteen
     public partial class PuzzleArea : Form
     {
         Random rand = new Random();
+        List<Point> InitialLocations = new List<Point>();
         public PuzzleArea()
         {
             InitializeComponent();
@@ -45,6 +46,8 @@ namespace PuzzleFifteen
                         Name = "Block" + blockCount.ToString()
                     };
 
+                    InitialLocations.Add(block.Location);
+
                     //block.Click += new EventHandler(Block_Click);  <----- long version
                     block.Click += Block_Click;                    //<----- short version
 
@@ -67,6 +70,7 @@ namespace PuzzleFifteen
             {
                 SwapBlocks(block);
             }
+            CheckForWin();
         }
 
         private void SwapBlocks(Button block)
@@ -107,8 +111,26 @@ namespace PuzzleFifteen
             }
         }
 
-
-
-
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShuffleBlocks();
+        }
+        private void CheckForWin()
+        {
+            string blockName;
+            for (int i = 1; i < 16; i++)
+            {
+                blockName = "Block" + i;
+                if (this.Controls[blockName].Location != InitialLocations[i-1])
+                {
+                    return;
+                }
+            }
+            PuzzleSolved();
+        }
+        private void PuzzleSolved()
+        {
+            MessageBox.Show("U won :D");
+        }
     }
 }
